@@ -37,4 +37,8 @@
   "exclude": [
     "node_modules"
   ]
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e8f8b1b (signin complete)

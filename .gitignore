@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 .env.local
 node_modules
+=======
+.env.local
+node_modules
+>>>>>>> e8f8b1b (signin complete)
 .next
