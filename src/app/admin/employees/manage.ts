@@ -49,10 +49,13 @@ export async function createEmployee(fd: FormData): Promise<Result> {
     email_confirm: true,
   });
   if (authErr || !created?.user) {
+    console.error("[createEmployee] auth error:", authErr);
+    const code = (authErr as { code?: string } | null)?.code;
+    const dup = code === "email_exists" || /already been registered/i.test(authErr?.message ?? "");
     return {
-      error: /already|registered|exists/i.test(authErr?.message ?? "")
+      error: dup
         ? "That email is already linked to another account."
-        : authErr?.message ?? "Couldn't create the account.",
+        : `Couldn't create the account: ${authErr?.message ?? "unknown error"}`,
     };
   }
 
