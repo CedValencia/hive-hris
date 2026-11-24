@@ -24,7 +24,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ type: s
   const { data: me } = await sb.from("profiles").select("role").eq("id", user.id).single();
   if (me?.role !== "admin") return new NextResponse("Forbidden", { status: 403 });
 
-  const emb = "profiles(full_name, employee_code)";
+  const emb = "profiles!employee_id(full_name, employee_code)";
   let rows: Cell[][] = [];
 
   if (type === "headcount") {

@@ -1,11 +1,5 @@
 import "./globals.css";
 import type { Metadata } from "next";
-<<<<<<< HEAD
-export const metadata: Metadata = { title: "Hive HRIS", description: "Attendance, leave and payslips in one place" };
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en" suppressHydrationWarning><body>{children}</body></html>;
-}
-=======
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
@@ -26,4 +20,3 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
->>>>>>> e8f8b1b (signin complete)
