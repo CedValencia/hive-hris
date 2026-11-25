@@ -6,12 +6,14 @@ import { Icon } from "./Icon";
 export const ADMIN_NAV = [
   { href: "/admin/dashboard", label: "Dashboard", icon: "grid" },
   { href: "/admin/employees", label: "Employees", icon: "users" },
+  { href: "/admin/documents", label: "Documents", icon: "grid" },
   { href: "/admin/attendance", label: "Attendance", icon: "cal" },
   { href: "/admin/leave", label: "Leave", icon: "plane" },
   { href: "/admin/payroll", label: "Payroll", icon: "wallet" },
   { href: "/admin/announcements", label: "Announcements", icon: "mega" },
   { href: "/admin/reports", label: "Reports", icon: "chart" },
   { href: "/admin/scan", label: "Scan QR", icon: "qr" },
+  { href: "/admin/qr", label: "QR Badges", icon: "qr" },
 ];
 
 export function SideNav() {

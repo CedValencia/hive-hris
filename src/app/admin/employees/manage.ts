@@ -21,7 +21,7 @@ const schema = z.object({
   s: z.coerce.number().positive("Enter a valid semi-monthly salary (the amount paid each cutoff)."),
   ty: z.enum(["Employee", "Independent contractor"]),
   j: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Choose the date hired."),
-  pw: z.string().min(6, "The temporary password must be at least 6 characters."),
+  pw: z.string().min(6, "Enter a temporary password (at least 6 characters) or click Generate."),
 });
 
 const CHARS = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";

@@ -3,7 +3,7 @@ import {
   POLICY, dayState, longDate, mins, monthFacts, monthLabel, pad2, shortDate, ago, isRestDay, type Ctx,
 } from "@/lib/employee-calc";
 import { PageHead, Stat, Table, Tag, Dash } from "@/components/employee-ui";
-import { AttendanceCalendar, Clock, QrCard, type CalDay } from "@/components/employee-live";
+import { AttendanceCalendar, Clock, type CalDay } from "@/components/employee-live";
 import { FixForm } from "@/components/employee-forms";
 
 export const dynamic = "force-dynamic";
@@ -18,18 +18,14 @@ function ShiftCard({ c }: { c: Ctx }) {
   const r = c.recs[Y], h = c.hols[Y];
   const off = h ? "Holiday · " + h : isRestDay(Y, sh) ? "Rest day" : "";
   const onLeave = c.leaves.some((l) => l.status === "Approved" && Y >= l.from_date && Y <= l.to_date);
-  let status = "", cls = "wait", qr: React.ReactNode = null;
+  let status = "", cls = "wait";
   if (onLeave && !r?.time_in) { status = "On approved leave"; cls = "info"; }
   else if (!r?.time_in) {
     status = off ? off + " — not scheduled" : "Not clocked in yet"; cls = off ? "info" : "";
-    qr = <QrCard title="SHOW TO CLOCK IN" text={off
-      ? `Today isn't a scheduled workday. Only show this to HR if you've been asked to work — it is logged as ${h ? "holiday" : "rest-day"} work.`
-      : "Show this code to HR when you arrive. Their scan records your clock-in."} />;
   } else if (!r.time_out) {
     const late = off ? 0 : Math.max(0, mins(r.time_in) - mins(sh.start));
     status = off ? `Clocked in · ${off} work` : late > 0 ? `Clocked in · Late by ${late} min` : "Clocked in · On time";
     cls = late > 0 ? "wait" : "ok";
-    qr = <QrCard title="SHOW TO CLOCK OUT" text="Show this code to HR when you leave. Their second scan records your clock-out." />;
   } else {
     const late = off ? 0 : Math.max(0, mins(r.time_in) - mins(sh.start)), hrs = Math.max(0, mins(r.time_out) - mins(r.time_in));
     status = `Shift complete · ${Math.floor(hrs / 60)}h ${hrs % 60}m worked${off ? ` · ${off} work` : late ? ` · ${late} min late` : " · On time"}`;
@@ -46,8 +42,7 @@ function ShiftCard({ c }: { c: Ctx }) {
         <div><div className="fig">ACTUAL IN</div><b className={r?.time_in ? "" : "miss"}>{r?.time_in ?? "—"}</b></div>
         <div><div className="fig">ACTUAL OUT</div><b className={r?.time_out ? "" : "miss"}>{r?.time_out ?? "—"}</b></div>
       </div>
-      {qr}
-      {!r && !off && !onLeave && <p className="mut" style={{ fontSize: 12.5, margin: "12px 0 0" }}>Your arrival is recorded when HR scans your code. Late arrivals are flagged automatically against your {sh.start} schedule.</p>}
+      {!r && !off && !onLeave && <p className="mut" style={{ fontSize: 12.5, margin: "12px 0 0" }}>Your arrival is recorded when HR scans your badge. Late arrivals are flagged automatically against your {sh.start} schedule.</p>}
     </div>
   );
 }

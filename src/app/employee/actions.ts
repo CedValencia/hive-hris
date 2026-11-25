@@ -5,7 +5,6 @@ import { z } from "zod";
 import { getPortal, loadCtx } from "@/lib/employee-data";
 import { bal, leaveDays, POLICY } from "@/lib/employee-calc";
 import { supabaseServer } from "@/lib/supabase/server";
-import { missingRequiredDocs } from "@/lib/documents";
 
 export type Result = { ok: boolean; msg: string };
 const fail = (msg: string): Result => ({ ok: false, msg });
@@ -127,8 +126,6 @@ export async function completeSetup(f: FormData): Promise<Result> {
   const p = await getPortal();
   if (p.me.profile_complete) redirect("/employee/home");
   if (!f.get("ok")) return fail("Please confirm that the details HR entered are correct.");
-  const missing = await missingRequiredDocs(p.sb, p.user.id);
-  if (missing.length) return fail(`Please upload your ${missing.join(" and ")} first. Use the upload section at the top of this page.`);
   const bd = str(f, "bd"), ph = str(f, "ph"), addr = str(f, "addr"), ecn = str(f, "ecn"), ecp = str(f, "ecp");
   const pw = String(f.get("new") ?? ""), rep = String(f.get("rep") ?? "");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(bd) || bd > p.today) return fail("Enter a valid birthday.");

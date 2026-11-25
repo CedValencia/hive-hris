@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useEffect, useState, useTransition } from "react";
+import { FormEvent, useState, useTransition } from "react";
 import { Modal } from "@/components/ui";
 import { DEPARTMENTS, fmtDate, initials, type Creds, type Row } from "@/lib/fmt";
 import { createEmployee, removeEmployee, resetTempPassword, setWorkerType } from "./manage";
@@ -57,7 +57,6 @@ export function CreateEmployeeForm() {
   const [email, setEmail] = useState("");
   const [touched, setTouched] = useState({ user: false, email: false });
   const [pw, setPw] = useState("");
-  useEffect(() => setPw(genTemp()), []);
 
   function onName(v: string) {
     setName(v);
@@ -78,7 +77,7 @@ export function CreateEmployeeForm() {
       setUser("");
       setEmail("");
       setTouched({ user: false, email: false });
-      setPw(genTemp());
+      setPw("");
       (e.target as HTMLFormElement)?.reset?.();
     });
   }
@@ -143,7 +142,7 @@ export function CreateEmployeeForm() {
           <label htmlFor="aeW">Temporary password <span className="req">*</span></label>
           <div className="pw">
             <input
-              id="aeW" name="pw" required autoComplete="off" value={pw} onChange={(e) => setPw(e.target.value)}
+              id="aeW" name="pw" required autoComplete="off" placeholder="Type one, or click Generate" value={pw} onChange={(e) => setPw(e.target.value)}
               style={{ paddingRight: 96, fontFamily: "ui-monospace,Menlo,monospace" }}
             />
             <button type="button" onClick={() => setPw(genTemp())}>Generate</button>

@@ -1,9 +1,18 @@
-"use client";
-import { useTransition } from "react";
-import { Icon } from "@/components/Icon";
-import { signOut } from "../actions";
+import { redirect } from "next/navigation";
+import { supabaseServer } from "@/lib/supabase/server";
 
+/** Sign-out button for the first-login setup shell (no sidebar there). */
 export function SignOutButton() {
-  const [pending, start] = useTransition();
-  return <button className="sm" disabled={pending} onClick={() => start(() => signOut())}><Icon name="out" /> Sign out</button>;
+  async function signOut() {
+    "use server";
+    const sb = await supabaseServer();
+    await sb.auth.signOut();
+    redirect("/signin");
+  }
+
+  return (
+    <form action={signOut}>
+      <button type="submit" className="btn">Sign out</button>
+    </form>
+  );
 }
