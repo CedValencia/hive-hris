@@ -19,8 +19,15 @@ export async function POST(req: Request) {
   if ("err" in tok) return NextResponse.json({ ok: false, msg: tok.err });
 
   const { date, time } = manilaNow();
-  const { data: emp } = await sb.from("profiles").select("id, full_name, hired_on, shifts(start_time, end_time, rest_days)").eq("id", tok.id).single();
+  const { data: emp } = await sb.from("profiles").select("id, full_name, role, hired_on, qr_version, shifts(start_time, end_time, rest_days)").eq("id", tok.id).single();
   if (!emp) return NextResponse.json({ ok: false, msg: "Unknown employee" });
+  if (emp.role === "admin") {
+    return NextResponse.json({ ok: false, msg: `That QR belongs to the admin account (${emp.full_name}), not an employee. Scan the employee's own badge from QR Badges.` });
+  }
+  // Badge QR codes carry a version. If HR generated a new QR (lost badge), the old one no longer matches.
+  if (tok.v !== undefined && (emp.qr_version ?? 0) !== tok.v) {
+    return NextResponse.json({ ok: false, msg: `This QR was replaced. Use ${emp.full_name}'s new badge` });
+  }
   if (date < emp.hired_on) return NextResponse.json({ ok: false, msg: `${emp.full_name} has not started yet` });
 
   const [{ data: leave }, { data: hol }, { data: rec }] = await Promise.all([

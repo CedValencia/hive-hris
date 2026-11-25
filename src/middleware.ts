@@ -1,8 +1,8 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Replaces the prototype's PAGES map + "bounce to signin.html" logic in core.js.
-// This is a first gate (fast redirects); every query is ALSO protected by RLS, and server actions re-check the role.
+// First gate for pages (fast redirects); every query is ALSO protected by RLS, and server actions re-check the role.
+// It also keeps the login fresh: getUser() refreshes an expiring session and the new cookies are written to the response.
 export async function middleware(req: NextRequest) {
   let res = NextResponse.next({ request: req });
   const sb = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
@@ -19,6 +19,10 @@ export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const go = (to: string) => NextResponse.redirect(new URL(to, req.url));
 
+  // API routes (QR, scan, reports): only refresh the session here. Each route checks the user and role itself and
+  // answers 401/403, so a fetch() never gets redirected to an HTML sign-in page.
+  if (path.startsWith("/api")) return res;
+
   if (!user) return go("/signin");
   const { data: me } = await sb.from("profiles").select("role, profile_complete").eq("id", user.id).single();
   if (!me) return go("/signin");
@@ -31,4 +35,4 @@ export async function middleware(req: NextRequest) {
   if (me.role === "employee" && me.profile_complete && path === "/employee/setup") return go(home);
   return res;
 }
-export const config = { matcher: ["/admin/:path*", "/employee/:path*"] };
+export const config = { matcher: ["/admin/:path*", "/employee/:path*", "/api/:path*"] };
